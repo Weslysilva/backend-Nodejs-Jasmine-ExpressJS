@@ -1,6 +1,5 @@
 const authService = require('../../../services/authServices')
 const { tokenVerify } = require('../../../modules/token')
-const { sequelize } = require('../../../modules/orm/sequelize/index')
 const pubKey = process.env['PUBLIC_KEY']
 
 //Para uma melhor apresentação do resultado use nos textos raiz de cada teste as palavras, Modulo ou Conjunto ou Grupo.
@@ -35,27 +34,13 @@ describe("Modulo Auth Service", function() {
       });
       
     
-    //   it(`Update Client`, async function() {
+      it(`Check User is Authenticated`, async function() {
 
-    //     expect(updatedUser.username).toEqual(updateUser.username);
-    //     expect(updatedUser.birthday).toEqual(new Date(updateUser.birthday));
-    //     expect(updatedUser.email).toEqual(updateUser.email);
+        let isAuthenticated = await authService.authenticatedUser(token)
+
+        expect(isAuthenticated.email).toEqual(User.email)
     
-    //   });
-
-
-    //   it(`FindOne Client`, async function() {
-
-    //     expect(createdUser.email).toEqual(newUser.email);
-
-    //   });
-      
-
-    //   it(`Delete Client`, async function() {
-
-    //     expect(deletedUser).toBe(1);
-
-    //   });
+      });
     
 
     });

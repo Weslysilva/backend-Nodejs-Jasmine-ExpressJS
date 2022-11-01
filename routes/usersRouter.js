@@ -1,9 +1,10 @@
 var express = require('express');
 var router = express.Router();
 var UserService = require('../services/UserService')
+var MidToken = require('./middlewares/midToken')
+var Role = require('./middlewares/midRole')
 
-router.get('/', function(req, res, next) {
-
+router.get('/', MidToken, function(req, res, next) {
   
   UserService.findOne(req.body.id).then(user=>{
     
@@ -19,7 +20,7 @@ router.get('/', function(req, res, next) {
   
 });
 
-router.get('/all', function(req, res, next) {
+router.get('/all', MidToken, Role, function(req, res, next) {
 
   
   UserService.findAll().then(users=>{

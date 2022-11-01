@@ -6,14 +6,24 @@ const authService = require('../services/authServices')
 
 //TODO Rota post para criar o token
 
-router.post('/', function(req, res, next) {
+router.post('/', async function(req, res, next) {
   
+  const {email=null, password=null} = req.body
+
+  if(!email || !password){
+    res.sendStatus(400).send();
+   return;
+  }
+
+    let token = await authService.checkCredential(email, password);
+
+    token ?
+      res.cookie('tk',token).send() : res.sendStatus(401).sendJson({
+         message: 'Authentication Error'
+      })
   
-  authService.authenticatedUser(req.body)
-  res.send();
+})
 
-
-});
 
 
 

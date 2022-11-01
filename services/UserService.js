@@ -81,7 +81,7 @@ module.exports = {
     },
     
     findOne : function(filterUser){
-
+        
         return UserModel.findOne({ where: { ...filterUser } })
         
     },

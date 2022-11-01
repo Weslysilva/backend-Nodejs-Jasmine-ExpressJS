@@ -1,39 +1,56 @@
-var jwt = require('jsonwebtoken');
-var privateKey = process.env['PRIVATE_KEY']
+const { tokenVerify, tokenDecode, tokenSign } = require('./token')
+const { refreshTokenGenerate, refreshTokenIsValid} = require('./refreshToken')
+
+
+
 
 module.exports = {
+    tokenVerify,
+    tokenDecode,
+    tokenSign,
+    refreshTokenGenerate,
+    refreshTokenIsValid,
+    tokenSignature: function (payload, refreshToken) {
 
+        return new Promise(async (resolve, reject) => {
+            
+            refreshToken ? refreshToken : refreshToken = await refreshTokenGenerate(payload);
 
-    tokenVerify : function(token){
+            payload.rtk = refreshToken;
+
+            tokenSign(payload).then((token)=>{
+            
+                resolve(token)
+            
+            }).catch((error)=>{
+                
+                reject(error)
+                 
+            });
+            
+
+        })
+
+    },
+    newTokenForRefreshToken: async function (tokenExpiredDecoded) {
         
-        return new Promise((resolve,reject)=>{
+        delete tokenExpiredDecoded.exp
+        delete tokenExpiredDecoded.iat
+        delete tokenExpiredDecoded.sub
+        
+        return new Promise((resolve, reject) => {
 
-            jwt.verify(token, privateKey, function(err, decoded) {
-                
-                decoded ? resolve(decoded) : reject(err);
-                
-            })
-
+            this.tokenSignature(tokenExpiredDecoded).then((signedNewToken)=>{
+            
+                resolve(signedNewToken)
+            
+            }).catch((error)=>{
+            
+                reject(error)
+                 
+            });  
 
         })
 
-      },
-
-      tokenSignature : function(payload){
-
-        return new Promise((resolve,reject)=>{
-            
-            jwt.sign(payload, privateKey, { algorithm: 'HS256'},function(error, tokenSigned){
-
-            tokenSigned ?
-                    resolve(tokenSigned) : 
-                    reject(error);
-
-            })
-            
-        })
-
-      }
-
-
+    },
 }

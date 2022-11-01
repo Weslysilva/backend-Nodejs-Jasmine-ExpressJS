@@ -1,7 +1,7 @@
 const userService = require('../services/UserService')
-const token = require('../modules/token')
-const Token = require('../models/TokensModel')
+const tokenModule = require('../modules/token')
 const { verify } = require('../modules/auth');
+const { tokenVerify, refreshTokenIsValid } = require('../modules/token')
 
 let User = {}
 let validPasswod;
@@ -10,7 +10,7 @@ module.exports = {
 
     //TODO Função Verificar usuario no banco corresponde as credenciais informadas.
     
-    checkCredential : async function(email,passwordPlainText){
+    checkCredential : function(email,passwordPlainText){
 
         return new Promise((resolve,reject)=>{
 
@@ -19,16 +19,17 @@ module.exports = {
 
                 User = user['dataValues'];
                 
-            validPasswod = await verify(passwordPlainText, User.password);
+                //Bcrypt Vaidate
+                validPasswod = await verify(passwordPlainText, User.password);
             
             if(validPasswod){
 
                 delete User.password;
-                
-                token.tokenSignature(User)
-                .then(tokenSingned=>{
+
+                //token generation 
+                tokenModule.tokenSignature(User).then(tokenSingned=>{
                     
-                    // Token.
+                    // Token generated and return token.
                     resolve(tokenSingned);
 
                 }).catch(error=>{
@@ -46,7 +47,7 @@ module.exports = {
 
             }).catch((error)=>{
 
-                console.error(error);
+                 reject('email or Password invalid');
 
             });
 
@@ -54,53 +55,60 @@ module.exports = {
 
     },
     
-    //TODO Função para recriar o refresh Token
-        
+    //TODO Função Verificar que verifica se o usuario esta autenticado
+    /**
+     * 
+     * @param {HashJWT} token 
+     * @returns 
+     */
     authenticatedUser : function(token){
 
         return new Promise((resolve, reject) => {
             
-            //code
+            tokenVerify(token).then((tokenValid)=>{
+                
+                resolve(tokenValid)
+                
+            
+            }).catch((error)=>{
+                
+                //TODO invalid token, verify Refresh Token
+                if(error.message == 'jwt expired'){
+                    refreshTokenIsValid(token).then((decodedToken)=>{
+                        
+                        //generateNew Token
+                        tokenModule.newTokenForRefreshToken(decodedToken).then((newToken)=>{
+                        
+                            resolve(newToken)
+                        
+                        }).catch((error)=>{
+                            
+                            reject(error)
+                             
+                        });
+                    
+                    }).catch((error)=>{
+                    
+                        //generate New Token and RefreshToken.
+                        reject(error)
+
+                    });
+                    
+                } 
+            
+            });
             
         });
 
     },
             
     
-    
-    
-    //TODO Função Verificar que verifica se o usuario esta autenticado
-    
-    checkAuthenticatedUser : function(email){
-
-        return new Promise((resolve, reject) => {
-            
-            //code
-            
-        });
-
-    },
-    
-    
-    
-    //TODO Função para atualizar o refresh token do usuario
-
-
-    updateRefreshToken : function(email){
-
-        return new Promise((resolve, reject) => {
-            
-            //code
-    
-        });
-    },
-
 
     revokeToken : function(email){
 
         return new Promise((resolve, reject) => {
             
-            //code
+            resolve('Not Implemented')
     
         });
 
