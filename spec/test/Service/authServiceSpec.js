@@ -19,7 +19,6 @@ describe("Modulo Auth Service", function() {
     describe("Auth", function() {
  
       beforeEach(async function(){
-
         //Get Token
         token = await authService.checkCredential('wesly.s.silva@gmail.com','12345678')
         tokenIsValid = await tokenVerify(token,pubKey)

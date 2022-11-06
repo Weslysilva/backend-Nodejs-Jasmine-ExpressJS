@@ -1,20 +1,45 @@
 // import sequelize from '@sequelize';
 
 const { sequelize, DataTypes, Model } = require('../modules/orm/sequelize');
+const CategoryModel= require('./CategoryModel');
+const ServiceModel = require('./ServiceModel');
+const ClientsAndCategory = require('./ClientsAndCategory');
+const ClientAndServices = require('./ClientAndServices');
 
-
-const Client = sequelize.define('Client', {
-    name: DataTypes.STRING,
-    birthday: DataTypes.DATE,
-    documentType: DataTypes.STRING,
-    document: DataTypes.STRING,
-    phone: DataTypes.STRING,
-    createdAt: DataTypes.DATE,
-    updatedAt: DataTypes.DATE,
+const ClientModel = sequelize.define('Client', {
+    name: {
+        type: DataTypes.STRING,
+        allowNull : false,
+    },
+    birthday: {
+        type: DataTypes.DATE,
+        allowNull : true
+    },
+    email: {
+        type: DataTypes.STRING,
+        allowNull : false,
+        unique: true
+    },
+    documentType: {
+        type: DataTypes.STRING,
+        unique: true
+    },
+    document:{
+        type: DataTypes.STRING,
+        unique: true
+    },
+    phone: {
+        type: DataTypes.STRING
+    },
 });
 
+//Relationship
 
-module.exports = Client
+ClientModel.belongsToMany(CategoryModel, { through: ClientsAndCategory})
+ClientModel.belongsToMany(ServiceModel, { through: ClientAndServices})
+
+
+module.exports = ClientModel
 
 
 
