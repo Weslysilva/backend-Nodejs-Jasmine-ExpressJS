@@ -55,7 +55,7 @@ describe("Modulo User Service", function() {
       updateUser = Object.assign(updateUser,createdUser);
       updateUser.username = 'detroid';
       updatedUser = await UserService.update(updateUser);
-
+      
       //Find
       findedUser = await UserService.findOne(createdUser.id);
       findedUser = user['dataValues'];

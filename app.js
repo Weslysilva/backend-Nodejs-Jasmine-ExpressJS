@@ -10,10 +10,10 @@ var httpRequestContext = require('http-request-context');
 require('module-alias/register');
 require('./modules/orm/sequelize');
 
-var loginRouter = require('./routes/login');
+var loginRouter = require('./routes/loginRouter');
 var usersRouter = require('./routes/usersRouter');
-var clientsRouter = require('./routes/clients');
-var productsRouter = require('./routes/products');
+var clientsRouter = require('./routes/clientRouter');
+var productsRouter = require('./routes/productsRouter');
 
 
 var app = express();
@@ -31,7 +31,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-  
+
 app.use('/login', loginRouter);
 app.use('/user', usersRouter);
 app.use('/client', clientsRouter);
@@ -44,14 +44,16 @@ app.use(function(req, res, next) {
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function(error, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  console.error(error)
+  res.send(new Error('Error to try process your request on this application'));
+
 });
 
 module.exports = app;

@@ -9,8 +9,8 @@ module.exports = {
         return UserModel.findAll();
     },
     
-    getAttributes : function(){
-        UserModel.getAttributes
+    getAttributes : function(atributes){
+        return UserModel.getAttributes(atributes)
     },
     
     update : async function(userProperty){
@@ -85,7 +85,13 @@ module.exports = {
         return UserModel.findOne({ where: { ...filterUser } })
         
     },
+
+    findByPrimaryKey : function(id){
+   
+        return UserModel.findByPk(id)
     
+    },
+
     delete : function(id){
 
         return UserModel.destroy({
