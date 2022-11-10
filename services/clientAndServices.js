@@ -1,20 +1,23 @@
-const ServiceModel = require('../models/ServiceModel')
-const { cLog, cError } = console
+const ClientAndServices = require('../models/ClientAndServices');
+const ServicesService = require('../services/ServiceService');
+const ClientService = require('../services/ClientService');
+
+
 
 module.exports = {
 
 
     findAll: function () {
-
+        
         return new Promise((resolve, reject) => {
+            
+            ClientAndServices.findAll().then(allElements => {
 
-            ServiceModel.findAll().then(allElements => {
-
-                resolve(allElements)
+                resolve(allElements);
 
             }).catch(error => {
 
-                reject(error)
+                reject(error);
 
             })
         })
@@ -26,7 +29,7 @@ module.exports = {
 
             try {
 
-                let elementFinded = await ServiceModel.getAttributes({ where: { ...properties } });
+                let elementFinded = await ClientAndServices.getAttributes({ where: { ...properties } });
 
                 if (elementFinded?.['dataValues']) {
 
@@ -45,29 +48,26 @@ module.exports = {
                 reject(error);
 
             }
-        })
+        });
     },
 
     update: async function (properties) {
-        
-        const { id = null } = properties;
 
+        const { id = null } = properties
+        
         let existElement = await this.findOne(id);
         properties = Object.assign(existElement, properties);
-        
-        
-        return new Promise(async (resolve, reject) => {
 
-            ServiceModel.update(properties,
+        return new Promise((resolve, reject) => {
+
+
+            ClientAndServices.update(properties,
                 {
-                    where: { id }
+                    where: { id: id }
 
-                }).then(async (res) => {
+                }).then((res) => {
 
-                    let seriveUpdated = await this.findByPrimaryKey(id);
-                    seriveUpdated = seriveUpdated['dataValues'];
-
-                    resolve(seriveUpdated);
+                    resolve(properties);
 
                 }).catch(error => {
 
@@ -82,45 +82,36 @@ module.exports = {
 
         //TODO valid cpf or cnpj
 
-        const { name } = properties;
+        // 1. Get service
+        let service = await ServicesService.findByPrimaryKey(properties.serviceId)
 
-        let findElement = await this.findOne({ name });
+        // 2. Get Client
+        let client = await ClientService.findByPrimaryKey(properties.clientId);
 
-        return new Promise(async (resolve, reject) => {
+        // 3. INSERT the association in Enrollments table
+        return new Promise((resolve, reject) => {
 
+            service.addClass(client, { through: ClientAndServices }).then(newElementCreated => {
 
-            if (findElement?.name == name) {
-
-                resolve(findElement);
-
-                return;
-
-            }
-
-            ServiceModel.create(properties).then(newElementCreated => {
-
-                newElementCreated = newElementCreated['dataValues']
                 resolve(newElementCreated);
 
             }).catch(error => {
 
-                cError(error)
-                reject(new Error('Check how properties were sent'));
+                reject(error);
 
             })
-
 
         })
 
     },
 
-    findOne: async function (filterProperty) {
+    findOne: function (properties) {
 
         return new Promise(async (resolve, reject) => {
 
             try {
 
-                let elementFinded = await ServiceModel.findOne({ where: { ...filterProperty } });
+                let elementFinded = await ClientAndServices.findOne({ where: { ...properties } });
 
                 if (elementFinded?.['dataValues']) {
 
@@ -140,9 +131,6 @@ module.exports = {
 
             }
 
-
-
-
         })
 
     },
@@ -150,8 +138,8 @@ module.exports = {
     findByPrimaryKey: function (id) {
 
         return new Promise((resolve, reject) => {
-
-            ServiceModel.findByPk(id).then(finded => {
+            //your code here
+            ClientAndServices.findByPk(id).then(finded => {
 
                 resolve(finded);
 
@@ -164,28 +152,17 @@ module.exports = {
         })
     },
 
-    delete: function (properties) {
+    delete: function (id) {
 
-        return new Promise((resolve, reject) => {
-
-            ServiceModel.destroy({
-
-                where: { ...properties }
-
-            }).then(deleted => {
-
-                resolve(deleted);
-
-            }).catch(error => {
-
-                reject(error);
-
-            })
-        })
+        return ClientAndServices.destroy({
+            where: { id: id }
+        });
 
     },
 
 
 }
+
+
 
 

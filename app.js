@@ -14,6 +14,8 @@ var loginRouter = require('./routes/loginRouter');
 var usersRouter = require('./routes/usersRouter');
 var clientsRouter = require('./routes/clientRouter');
 var productsRouter = require('./routes/productsRouter');
+var servicesRouter = require('./routes/servicesRouter');
+var categoriesRouter = require('./routes/categoriesRouter');
 
 
 var app = express();
@@ -36,6 +38,8 @@ app.use('/login', loginRouter);
 app.use('/user', usersRouter);
 app.use('/client', clientsRouter);
 app.use('/product', productsRouter);
+app.use('/service', servicesRouter);
+app.use('/category', categoriesRouter);
 
 
 // catch 404 and forward to error handler
@@ -46,11 +50,11 @@ app.use(function(req, res, next) {
 // error handler
 app.use(function(error, req, res, next) {
   // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  res.locals.message = error.message;
+  res.locals.error = req.app.get('env') === 'development' ? error : {};
 
   // render the error page
-  res.status(err.status || 500);
+  res.status(error.status || 500);
   console.error(error)
   res.send(new Error('Error to try process your request on this application'));
 

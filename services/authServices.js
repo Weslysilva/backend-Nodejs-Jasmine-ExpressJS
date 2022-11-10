@@ -9,107 +9,110 @@ let validPasswod;
 module.exports = {
 
     //TODO Função Verificar usuario no banco corresponde as credenciais informadas.
-    
-    checkCredential : function(email,passwordPlainText){
 
-        return new Promise((resolve,reject)=>{
+    checkCredential: function (email, passwordPlainText) {
 
-            userService.findOne({ email: email})
-            .then(async (user)=>{
+        return new Promise((resolve, reject) => {
 
-                User = user['dataValues'];
-                
-                //Bcrypt Vaidate
-                validPasswod = await verify(passwordPlainText, User.password);
-            
-            if(validPasswod){
+            userService.findOne({ email: email })
+                .then(async (user) => {
 
-                delete User.password;
+                    User = user['dataValues'];
 
-                //token generation 
-                tokenModule.tokenSignature(User).then(tokenSingned=>{
-                    
-                    // Token generated and return token.
-                    resolve(tokenSingned);
+                    //Bcrypt Vaidate
+                    validPasswod = await verify(passwordPlainText, User.password);
 
-                }).catch(error=>{
-                    
-                    reject(error);
+                    if (validPasswod) {
 
-                })
+                        delete User.password;
 
-            }else{
+                        //token generation 
+                        tokenModule.tokenSignature(User).then(tokenSingned => {
 
-                reject('email or Password invalid');
-            
-            }
+                            // Token generated and return token.
+                            resolve(tokenSingned);
+
+                        }).catch(error => {
+
+                            reject(error);
+
+                        })
+
+                    } else {
+
+                        reject('email or Password invalid');
+
+                    }
 
 
-            }).catch((error)=>{
+                }).catch((error) => {
 
-                 reject('email or Password invalid');
+                    reject('email or Password invalid');
 
-            });
+                });
 
         });
 
     },
-    
+
     //TODO Função Verificar que verifica se o usuario esta autenticado
     /**
      * 
      * @param {HashJWT} token 
      * @returns 
      */
-    authenticatedUser : function(token){
+    authenticatedUser: function (token) {
 
         return new Promise((resolve, reject) => {
-            
-            tokenVerify(token).then((tokenValid)=>{
-                
-                resolve(tokenValid)
-                
-            
-            }).catch((error)=>{
-                
+
+            tokenVerify(token).then(async (decodedToken) => {
+
+                resolve(token);
+
+            }).catch((error) => {
+
                 //TODO invalid token, verify Refresh Token
-                if(error.message == 'jwt expired'){
-                    refreshTokenIsValid(token).then((decodedToken)=>{
-                        
+                if (error.message == 'jwt expired') {
+                    refreshTokenIsValid(token).then((decodedToken) => {
+
                         //generateNew Token
-                        tokenModule.newTokenForRefreshToken(decodedToken).then((newToken)=>{
-                        
+                        tokenModule.newTokenForRefreshToken(decodedToken).then((newToken) => {
+
                             resolve(newToken)
-                        
-                        }).catch((error)=>{
-                            
-                            reject(error)
-                             
+
+                        }).catch((error) => {
+
+                            reject(error);
+
                         });
-                    
-                    }).catch((error)=>{
-                    
+
+                    }).catch((error) => {
+
                         //generate New Token and RefreshToken.
-                        reject(error)
+                        reject(error);
 
                     });
-                    
-                } 
-            
+
+                } else {
+
+                    reject(error);
+
+                }
+
             });
-            
+
         });
 
     },
-            
-    
 
-    revokeToken : function(email){
+
+
+    revokeToken: function (email) {
 
         return new Promise((resolve, reject) => {
-            
-            resolve('Not Implemented')
-    
+
+            resolve('Not Implemented');
+
         });
 
     },

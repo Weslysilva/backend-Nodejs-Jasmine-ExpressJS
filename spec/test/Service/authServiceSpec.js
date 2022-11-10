@@ -1,5 +1,6 @@
 const authService = require('../../../services/authServices')
 const { tokenVerify } = require('../../../modules/token')
+const { verify } = require('jsonwebtoken')
 const pubKey = process.env['PUBLIC_KEY']
 
 //Para uma melhor apresentação do resultado use nos textos raiz de cada teste as palavras, Modulo ou Conjunto ou Grupo.
@@ -12,32 +13,39 @@ let User = {
 }
 
 let token
-let tokenIsValid
+let decodedToken
 
 describe("Modulo Auth Service", function() {
 
     describe("Auth", function() {
  
       beforeEach(async function(){
+
         //Get Token
-        token = await authService.checkCredential('wesly.s.silva@gmail.com','12345678')
-        tokenIsValid = await tokenVerify(token,pubKey)
+        token = await authService.checkCredential('wesly.s.silva@gmail.com','12345678');
+        decodedToken = await tokenVerify(token);
+        
 
       },10000);
       
+      it(`Check Login`, async function() { 
+      
+        expect(token).toBeDefined();
+      
+      });
       
       it(`Check Token is Valid`, async function() { 
       
-        expect(tokenIsValid.email).toEqual(User.email)
+        expect(decodedToken.email).toEqual(User.email);
       
       });
       
     
       it(`Check User is Authenticated`, async function() {
 
-        let isAuthenticated = await authService.authenticatedUser(token)
+        let tokenUser = await authService.authenticatedUser(token);
 
-        expect(isAuthenticated.email).toEqual(User.email)
+        expect(tokenUser).toEqual(token);
     
       });
     

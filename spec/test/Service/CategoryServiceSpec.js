@@ -7,7 +7,7 @@ let DateGenerator = require('random-date-generator')
 
 
 //Modules
-const CategoryService = require('../../../services/CategoryService');
+const CategoryService = require('../../../services/CategoriesService');
 
 //Use this command if you want clean database
 // sequelize.sync({  force: true });
@@ -33,8 +33,7 @@ describe("Modulo Category Service", function() {
     beforeEach(async function(){
 
       //Create
-      let element = await CategoryService.create(newElementForCreate);
-      createdElement = element['dataValues'];
+      createdElement = await CategoryService.create(newElementForCreate);
 
       //Update
       updateElement = Object.assign(updateElement,createdElement);
@@ -44,13 +43,11 @@ describe("Modulo Category Service", function() {
 
       //Find
       findedElement = await CategoryService.findByPrimaryKey(createdElement.id);
-       findedElement = findedElement['dataValues'];
 
       //Delete
       deletedElement = await CategoryService.delete(createdElement.id);
 
     },40000);
-    
     
     
     it(`Create Category`, async function() { 

@@ -24,10 +24,10 @@ module.exports = {
 
         return new Promise((resolve, reject) => {
             
-            jwt.verify(token, privateKey, function (error, tokenIsValid) {
+            jwt.verify(token, privateKey, function (error, decodedToken) {
 
-                tokenIsValid ?
-                    resolve(tokenIsValid) :
+                decodedToken ?
+                    resolve(decodedToken) :
                     reject(error);
 
             })

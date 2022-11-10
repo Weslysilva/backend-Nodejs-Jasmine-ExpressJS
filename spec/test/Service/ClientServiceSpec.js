@@ -8,15 +8,8 @@ let DateGenerator = require('random-date-generator')
 let startDate = new Date(1980, 2, 2);
 let endDate = new Date(2000, 3, 3);
 
-
 //Modules
 const ClientService = require('../../../services/ClientService');
-const { verify } = require('../../../modules/auth');
-
-const { sequelize } = require('../../../modules/orm/sequelize/index');
-
-//Use this command if you want clean database
-// sequelize.sync({  force: true });
 
 //Para uma melhor apresentação do resultado use nos textos raiz de cada teste as palavras, Module.
 
@@ -34,8 +27,6 @@ let deletedClient
 let hashPwd
 
 
-
-
 describe("Modulo Client Service", function() {
 
   describe("CRUD", function() {
@@ -43,9 +34,8 @@ describe("Modulo Client Service", function() {
     beforeEach(async function(){
 
       //Create
-      let client = await ClientService.create(newClient);
-      createdClient = client['dataValues'];
-      
+      createdClient = await ClientService.create(newClient);
+     
 
       //Update
       updateClient = Object.assign(updateClient,createdClient);
@@ -54,7 +44,6 @@ describe("Modulo Client Service", function() {
 
       //Find
       findedClient = await ClientService.findOne(createdClient.id);
-      findedClient = client['dataValues'];
 
       //Delete
       deletedClient = await ClientService.delete(createdClient.id);
@@ -63,7 +52,7 @@ describe("Modulo Client Service", function() {
     
     
     
-    it(`Create Client`, async function() { 
+    it(`Create Client`, async function(){ 
     
       expect(createdClient.name).toEqual(newClient.name);
       expect(createdClient.birthday).toEqual(new Date(newClient.birthday));

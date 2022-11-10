@@ -1,4 +1,5 @@
 var express = require('express');
+const auth = require('../../modules/auth');
 var router = express.Router();
 
 const authService = require('../../services/authServices')
@@ -19,7 +20,7 @@ const middlewareVerifyToken = router.use(function(req, res, next) {
     authService.authenticatedUser(token).then(tokenIsValid=>{
 
         if(tokenIsValid){
-          req.user = tokenIsValid
+          res.cookie('tk',tokenIsValid)
           next();
         }
 

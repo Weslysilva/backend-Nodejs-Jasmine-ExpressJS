@@ -33,8 +33,7 @@ describe("Modulo Service Service", function() {
     beforeEach(async function(){
 
       //Create
-      let element = await ServiceService.create(newElementForCreate);
-      createdElement = element['dataValues'];
+      createdElement = await ServiceService.create(newElementForCreate);
 
       //Update
       updateElement = Object.assign(updateElement,createdElement);
@@ -43,8 +42,7 @@ describe("Modulo Service Service", function() {
       updatedElement = await ServiceService.update(updateElement);
 
       //Find
-      findedElement = await ServiceService.findOne(createdElement.id);
-      findedElement = findedElement['dataValues'];
+      findedElement = await ServiceService.findByPrimaryKey(createdElement.id);
 
       //Delete
       deletedElement = await ServiceService.delete(createdElement.id);

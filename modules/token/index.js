@@ -1,8 +1,5 @@
 const { tokenVerify, tokenDecode, tokenSign } = require('./token')
-const { refreshTokenGenerate, refreshTokenIsValid} = require('./refreshToken')
-
-
-
+const { refreshTokenGenerate, refreshTokenIsValid} = require('./refreshToken');
 
 module.exports = {
     tokenVerify,
@@ -41,7 +38,7 @@ module.exports = {
         return new Promise((resolve, reject) => {
 
             this.tokenSignature(tokenExpiredDecoded).then((signedNewToken)=>{
-            
+                
                 resolve(signedNewToken)
             
             }).catch((error)=>{

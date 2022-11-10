@@ -1,32 +1,31 @@
-const ServiceModel = require('../models/ServiceModel')
-const { cLog, cError } = console
+const CategoryModel = require('../models/CategoryModel')
 
 module.exports = {
 
 
     findAll: function () {
-
-        return new Promise((resolve, reject) => {
-
-            ServiceModel.findAll().then(allElements => {
-
+        
+        return new Promise((resolve,reject)=>{
+                 //your code here
+            CategoryModel.findAll().then(allElements=>{
+                
                 resolve(allElements)
 
-            }).catch(error => {
-
+            }).catch(error=>{
+                
                 reject(error)
-
+            
             })
         })
     },
 
     getAttributes: function (properties) {
-
+        
         return new Promise(async (resolve, reject) => {
 
             try {
 
-                let elementFinded = await ServiceModel.getAttributes({ where: { ...properties } });
+                let elementFinded = await CategoryModel.getAttributes({ where: { ...properties } });
 
                 if (elementFinded?.['dataValues']) {
 
@@ -45,29 +44,26 @@ module.exports = {
                 reject(error);
 
             }
-        })
+        });
+
     },
 
     update: async function (properties) {
-        
+
         const { id = null } = properties;
 
         let existElement = await this.findOne(id);
         properties = Object.assign(existElement, properties);
-        
-        
-        return new Promise(async (resolve, reject) => {
 
-            ServiceModel.update(properties,
+        return new Promise((resolve, reject) => {
+
+            CategoryModel.update(properties,
                 {
-                    where: { id }
+                    where: { id: id }
 
-                }).then(async (res) => {
+                }).then((res) => {
 
-                    let seriveUpdated = await this.findByPrimaryKey(id);
-                    seriveUpdated = seriveUpdated['dataValues'];
-
-                    resolve(seriveUpdated);
+                    resolve(properties);
 
                 }).catch(error => {
 
@@ -81,7 +77,6 @@ module.exports = {
     create: async function (properties) {
 
         //TODO valid cpf or cnpj
-
         const { name } = properties;
 
         let findElement = await this.findOne({ name });
@@ -97,7 +92,7 @@ module.exports = {
 
             }
 
-            ServiceModel.create(properties).then(newElementCreated => {
+            CategoryModel.create(properties).then(newElementCreated => {
 
                 newElementCreated = newElementCreated['dataValues']
                 resolve(newElementCreated);
@@ -107,20 +102,21 @@ module.exports = {
                 cError(error)
                 reject(new Error('Check how properties were sent'));
 
-            })
+            });
 
+        });
 
-        })
 
     },
 
-    findOne: async function (filterProperty) {
+    findOne: function (filterProperty) {
 
         return new Promise(async (resolve, reject) => {
 
+
             try {
 
-                let elementFinded = await ServiceModel.findOne({ where: { ...filterProperty } });
+                let elementFinded = await CategoryModel.findOne({ where: { ...filterProperty } });
 
                 if (elementFinded?.['dataValues']) {
 
@@ -149,39 +145,48 @@ module.exports = {
 
     findByPrimaryKey: function (id) {
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve,reject)=>{
+                 //your code here
+            CategoryModel.findByPk(id).then(finded=>{
+                
+                if (finded?.['dataValues']) {
 
-            ServiceModel.findByPk(id).then(finded => {
+                    finded = finded['dataValues'];
+                    resolve(finded);
+                    return;
 
-                resolve(finded);
+                } else if (finded == null) {
 
-            }).catch(error => {
+                    resolve(null);
+
+                }
+            
+            }).catch(error=>{
 
                 reject(new Error('Not Found'));
 
             })
-
+            
         })
     },
 
     delete: function (properties) {
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve,reject)=>{
 
-            ServiceModel.destroy({
-
+            CategoryModel.destroy({
                 where: { ...properties }
-
-            }).then(deleted => {
-
+            }).then(deleted=>{
+                
                 resolve(deleted);
 
-            }).catch(error => {
+            }).catch(error=>{
 
                 reject(error);
-
+            
             })
         })
+        
 
     },
 
